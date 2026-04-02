@@ -60,7 +60,7 @@
       const scene = new THREE.Scene();
       scene.background = new THREE.Color(0x000000);
 
-      const camera = new THREE.PerspectiveCamera(100, window.innerWidth / window.innerHeight, 0.1, 100);
+      const camera = new THREE.PerspectiveCamera(130, window.innerWidth / window.innerHeight, 0.1, 100);
       camera.position.set(0, 3.2, 22.5);
 
       const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -260,7 +260,7 @@
       function buildLetters(font) {
         const circleRadius = 10.8;
         const arcCenterY = -1.6;
-        const arcCenterZ = -1.6;
+        const arcCenterZ = -8.0;
         const arcSpan = 1.18;
         const letterGap = 0.085;
         const totalSlots = Math.max(phrase.length - 1, 1);
@@ -351,7 +351,7 @@
       let cameraDistance = 3.825;
       const cameraLookTarget = new THREE.Vector3(0, 0.0, 0);
       const orbitBaseYaw = 0;
-      const orbitBasePitch = -0.086;
+      const orbitBasePitch = -0.261;
       let orbitYaw = orbitBaseYaw;
       let orbitPitch = orbitBasePitch;
       let orbitYawTarget = orbitYaw;

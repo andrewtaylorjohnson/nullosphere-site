@@ -395,8 +395,8 @@
         orbitYawTarget -= dx * 0.002;
         orbitPitchTarget += dy * 0.002;
 
-        const yawLimit = Math.PI / 4;   // 45 degrees each direction
-        const pitchLimit = Math.PI / 4; // 45 degrees each direction
+        const yawLimit = Math.PI / 6;   // 30 degrees each direction
+        const pitchLimit = Math.PI / 6; // 30 degrees each direction
         orbitYawTarget = Math.max(orbitBaseYaw - yawLimit, Math.min(orbitBaseYaw + yawLimit, orbitYawTarget));
         orbitPitchTarget = Math.max(orbitBasePitch - pitchLimit, Math.min(orbitBasePitch + pitchLimit, orbitPitchTarget));
       });
@@ -422,8 +422,8 @@
         sphereGroup.rotation.y = sphereBaseRotY;
         sphereGroup.rotation.z = 0;
 
-        orbitYaw += (orbitYawTarget - orbitYaw) * dt * 2.5;
-        orbitPitch += (orbitPitchTarget - orbitPitch) * dt * 2.5;
+        orbitYaw += (orbitYawTarget - orbitYaw) * dt * 6.0;
+        orbitPitch += (orbitPitchTarget - orbitPitch) * dt * 6.0;
 
         if (planetModel) {
           planetModel.position.y = 0;
@@ -508,7 +508,7 @@
         camera.lookAt(cameraLookTarget);
 
         // Keep scene objects fixed in world space while the camera orbits.
-        textRoot.position.set(0, 6.5, 0);
+        textRoot.position.set(0, 4.2, 0);
         textRoot.rotation.set(0, 0, 0);
         sphereGroup.position.set(0, 0, 0);
       }

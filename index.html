@@ -259,7 +259,7 @@
 
       function buildLetters(font) {
         const circleRadius = 10.8;
-        const arcCenterY = -0.6;
+        const arcCenterY = -1.6;
         const arcCenterZ = -1.6;
         const arcSpan = 1.18;
         const letterGap = 0.085;
@@ -508,7 +508,7 @@
         camera.lookAt(cameraLookTarget);
 
         // Keep scene objects fixed in world space while the camera orbits.
-        textRoot.position.set(0, 3.2, 0);
+        textRoot.position.set(0, 0, 0);
         textRoot.rotation.set(0, 0, 0);
         sphereGroup.position.set(0, 0, 0);
       }

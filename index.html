@@ -357,6 +357,16 @@
       let orbitYawTarget = orbitYaw;
       let orbitPitchTarget = orbitPitch;
 
+      // Ensure scene resets fully on reload
+      window.addEventListener("load", () => {
+        orbitYaw = orbitBaseYaw;
+        orbitPitch = orbitBasePitch;
+        orbitYawTarget = orbitBaseYaw;
+        orbitPitchTarget = orbitBasePitch;
+        cameraDistance = 2.55;
+      });
+
+
 
       function setPointerFromEvent(e) {
         pointer.x = (e.clientX / window.innerWidth) * 2 - 1;

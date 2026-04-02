@@ -223,6 +223,7 @@
       const phrase = "NULLOSPHERE";
       const letters = [];
       const clickableMeshes = [];
+      const letterHitboxes = [];
       const textRoot = new THREE.Group();
       scene.add(textRoot);
 
@@ -269,7 +270,7 @@
       }
 
       function buildLetters(font) {
-        const circleRadius = 9.6;
+        const circleRadius = 8.9;
         const arcCenterY = -2.6;
         const arcCenterZ = -1.6;
         const arcSpan = 1.18;
@@ -309,9 +310,29 @@
             isJumping: false
           };
 
+          geom.computeBoundingBox();
+          const hitBB = geom.boundingBox;
+          const hitWidth = (hitBB.max.x - hitBB.min.x) + 0.75;
+          const hitHeight = (hitBB.max.y - hitBB.min.y) + 0.65;
+
+          const hitbox = new THREE.Mesh(
+            new THREE.PlaneGeometry(hitWidth, hitHeight),
+            new THREE.MeshBasicMaterial({
+              transparent: true,
+              opacity: 0.0,
+              depthWrite: false,
+              side: THREE.DoubleSide
+            })
+          );
+          hitbox.position.copy(mesh.position);
+          hitbox.rotation.copy(mesh.rotation);
+          hitbox.userData.letterMesh = mesh;
+
           letters.push(mesh);
           clickableMeshes.push(mesh);
+          letterHitboxes.push(hitbox);
           textRoot.add(mesh);
+          textRoot.add(hitbox);
         }
       }
 
@@ -360,9 +381,9 @@
           return;
         }
 
-        const letterHits = raycaster.intersectObjects(clickableMeshes, false);
+        const letterHits = raycaster.intersectObjects(letterHitboxes, false);
         if (letterHits.length > 0) {
-          const letter = letterHits[0].object;
+          const letter = letterHits[0].object.userData.letterMesh || letterHits[0].object;
           letter.userData.bounceTime = 0;
           letter.userData.isJumping = true;
         }
@@ -425,7 +446,9 @@
           }
         }
 
-        for (const letter of letters) {
+        for (let idx = 0; idx < letters.length; idx++) {
+          const letter = letters[idx];
+          const hitbox = letterHitboxes[idx];
           const u = letter.userData;
 
           const localUp = new THREE.Vector3(
@@ -434,16 +457,16 @@
              0
           );
 
-          const idleLift = Math.sin(t * 1.6 + u.phase) * 0.015;
-          const idleZ = Math.cos(t * 1.9 + u.phase * 1.3) * 0.015;
-          const idleRotX = Math.sin(t * 1.8 + u.phase) * 0.01;
-          const idleRotY = Math.cos(t * 1.6 + u.phase * 0.8) * 0.01;
-          const idleRotZ = Math.sin(t * 1.5 + u.phase) * 0.006;
+          const idleLift = Math.sin(t * 1.1 + u.phase) * 0.015;
+          const idleZ = Math.cos(t * 1.35 + u.phase * 1.3) * 0.015;
+          const idleRotX = Math.sin(t * 1.25 + u.phase) * 0.01;
+          const idleRotY = Math.cos(t * 1.05 + u.phase * 0.8) * 0.01;
+          const idleRotZ = Math.sin(t * 0.95 + u.phase) * 0.006;
 
           let jump = 0;
           let groundSquash = 0;
           if (u.isJumping) {
-            u.bounceTime += dt * (7.2 + u.bounceOffset * 0.5); // twice as fast
+            u.bounceTime += dt * (3.6 + u.bounceOffset * 0.5); // twice as fast
             const p = Math.min(u.bounceTime / Math.PI, 1);
             jump = Math.sin(p * Math.PI);
             groundSquash = Math.pow(Math.cos(p * Math.PI * 2) * 0.5 + 0.5, 6);
@@ -471,6 +494,11 @@
             1 + stretch - squash * 0.08,
             1 - squash * 0.04
           );
+
+          if (hitbox) {
+            hitbox.position.copy(letter.position);
+            hitbox.rotation.copy(letter.rotation);
+          }
         }
 
         camera.position.x += ((mouseX * 1.1) - camera.position.x) * dt * 1.3;

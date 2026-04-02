@@ -347,11 +347,13 @@
       let isDraggingOrbit = false;
       let dragStart = { x: 0, y: 0 };
       const sphereBaseRotX =  Math.PI / 6;
-      const sphereBaseRotY = -Math.PI / 4;
-      let cameraDistance = 26.0;
+      const sphereBaseRotY = 0;
+      let cameraDistance = 13.0;
       const cameraLookTarget = new THREE.Vector3(0, 4.0, 0);
-      let orbitYaw = 0;
-      let orbitPitch = 0.35;
+      const orbitBaseYaw = 0;
+      const orbitBasePitch = 0.35;
+      let orbitYaw = orbitBaseYaw;
+      let orbitPitch = orbitBasePitch;
       let orbitYawTarget = orbitYaw;
       let orbitPitchTarget = orbitPitch;
 
@@ -395,8 +397,10 @@
         orbitYawTarget -= dx * 0.002;
         orbitPitchTarget += dy * 0.002;
 
-        const pitchLimit = Math.PI / 6; // 30 degrees travel around base
-        orbitPitchTarget = Math.max(0.05, Math.min(0.35 + pitchLimit, orbitPitchTarget));
+        const yawLimit = Math.PI / 4;   // 45 degrees each direction
+        const pitchLimit = Math.PI / 4; // 45 degrees each direction
+        orbitYawTarget = Math.max(orbitBaseYaw - yawLimit, Math.min(orbitBaseYaw + yawLimit, orbitYawTarget));
+        orbitPitchTarget = Math.max(orbitBasePitch - pitchLimit, Math.min(orbitBasePitch + pitchLimit, orbitPitchTarget));
       });
 
       window.addEventListener("pointerup", () => {
@@ -507,6 +511,11 @@
         camera.position.y += (targetCamY - camera.position.y) * dt * 3.0;
         camera.position.z += (targetCamZ - camera.position.z) * dt * 3.0;
         camera.lookAt(cameraLookTarget);
+
+        // Keep Nullosphere composition visually static while orbiting camera:
+        // compensate the text root against camera yaw/pitch, but preserve per-letter local animation.
+        textRoot.position.set(0, 0, 0);
+        textRoot.rotation.set(-orbitPitch + orbitBasePitch, -orbitYaw + orbitBaseYaw, 0);
       }
 
       function animate() {
@@ -514,9 +523,6 @@
         const dt = Math.min(clock.getDelta(), 0.033);
         const t = clock.elapsedTime;
         update(dt, t);
-
-        // keep text facing camera (billboard effect)
-        textRoot.lookAt(camera.position);
 
         renderer.render(scene, camera);
       }

@@ -327,6 +327,14 @@
       scene.add(loadingGroup);
       let loadingLetters = [];
 
+      // Responsive screen-space-ish text framing
+      const composition = {
+        textDepthFromCamera: 18.0,   // keep text in a stable screen zone
+        textTopScreenY: 0.26,        // 0 = top, 1 = bottom
+        textScaleBase: 1.0
+      };
+
+
       function buildLoadingText(font) {
         const loadingPhrase = "Loading..";
         const spacing = 0.92;
@@ -550,6 +558,10 @@
         }
 
         if (loadingGroup.visible) {
+          // Keep loading text centered in scene while the planet asset is not yet visible
+          loadingGroup.position.set(0, 0, 0);
+          loadingGroup.rotation.set(0, 0, 0);
+
           for (let i = 0; i < loadingLetters.length; i++) {
             const mesh = loadingLetters[i];
             const phase = t * 2.0 + i * 0.6;
@@ -626,11 +638,36 @@
         camera.lookAt(cameraLookTarget);
 
         // Keep scene objects fixed in world space while the camera orbits.
-        textRoot.position.set(0, 0, 0);
-        textRoot.rotation.set(0, 0, 0);
         sphereGroup.position.set(0, 0, 0);
         aoPlane.position.x = sphereGroup.position.x;
         aoPlane.position.z = sphereGroup.position.z;
+
+        // Screen-anchored 3D text: keep it framed near the top regardless of display shape
+        const camForward = new THREE.Vector3();
+        camera.getWorldDirection(camForward);
+
+        const camRight = new THREE.Vector3().crossVectors(camForward, camera.up).normalize();
+        const camUp = new THREE.Vector3().copy(camera.up).normalize();
+
+        const depthPoint = new THREE.Vector3().copy(camera.position).addScaledVector(camForward, composition.textDepthFromCamera);
+
+        const vFov = THREE.MathUtils.degToRad(camera.fov);
+        const viewHeight = 2 * Math.tan(vFov * 0.5) * composition.textDepthFromCamera;
+        const viewWidth = viewHeight * camera.aspect;
+
+        const xOffset = 0.0;
+        const yOffset = (0.5 - composition.textTopScreenY) * viewHeight;
+
+        textRoot.position.copy(depthPoint)
+          .addScaledVector(camRight, xOffset * viewWidth)
+          .addScaledVector(camUp, yOffset);
+
+        // keep the text facing camera consistently
+        textRoot.quaternion.copy(camera.quaternion);
+
+        // slight aspect compensation so wide/tall displays keep a similar text read
+        const aspectComp = THREE.MathUtils.clamp(1.0 / Math.sqrt(camera.aspect), 0.82, 1.18);
+        textRoot.scale.setScalar(composition.textScaleBase * aspectComp);
       }
 
       function animate() {

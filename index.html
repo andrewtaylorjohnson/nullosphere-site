@@ -367,20 +367,18 @@
         setPointerFromEvent(e);
         raycaster.setFromCamera(pointer, camera);
 
-        const planetHits = raycaster.intersectObjects([sphereGroup], true);
-        if (planetHits.length > 0) {
-          isDraggingOrbit = true;
-          dragStart.x = e.clientX;
-          dragStart.y = e.clientY;
-          return;
-        }
-
         const letterHits = raycaster.intersectObjects(letterHitboxes, false);
         if (letterHits.length > 0) {
           const letter = letterHits[0].object.userData.letterMesh || letterHits[0].object;
           letter.userData.bounceTime = 0;
           letter.userData.isJumping = true;
+          return;
         }
+
+        // Start orbiting when clicking anywhere else on screen, including over the planet.
+        isDraggingOrbit = true;
+        dragStart.x = e.clientX;
+        dragStart.y = e.clientY;
       });
 
       window.addEventListener("pointermove", (e) => {

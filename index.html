@@ -422,7 +422,7 @@
       window.addEventListener("wheel", (e) => {
         e.preventDefault();
         cameraDistance += e.deltaY * 0.01;
-        cameraDistance = Math.max(2.5, Math.min(3.825, cameraDistance));
+        cameraDistance = Math.max(2.5, Math.min(7.65, cameraDistance));
       }, { passive: false });
 
       const clock = new THREE.Clock();

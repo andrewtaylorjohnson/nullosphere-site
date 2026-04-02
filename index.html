@@ -173,6 +173,7 @@
           });
 
           sphereGroup.add(planetModel);
+          loadingGroup.visible = false;
           statusBox.textContent = "planet.glb loaded";
         },
         undefined,
@@ -224,6 +225,48 @@
       const clickableMeshes = [];
       const textRoot = new THREE.Group();
       scene.add(textRoot);
+
+      const loadingGroup = new THREE.Group();
+      scene.add(loadingGroup);
+      let loadingLetters = [];
+
+      function buildLoadingText(font) {
+        const loadingPhrase = "Loading..";
+        const spacing = 0.92;
+        const totalWidth = (loadingPhrase.length - 1) * spacing;
+
+        for (let i = 0; i < loadingPhrase.length; i++) {
+          const ch = loadingPhrase[i];
+          const shapes = font.generateShapes(ch, 0.72);
+          const geom = new THREE.ShapeGeometry(shapes, 10);
+
+          deformFlatGeometry(geom, i * 0.41 + 0.1);
+          geom.computeBoundingBox();
+          const bb = geom.boundingBox;
+          const width = bb.max.x - bb.min.x;
+          const height = bb.max.y - bb.min.y;
+          geom.translate(-(bb.min.x + width / 2), -(bb.min.y + height / 2), 0);
+
+          const mesh = new THREE.Mesh(
+            geom,
+            new THREE.MeshStandardMaterial({
+              color: 0xffffff,
+              roughness: 1.0,
+              metalness: 0.0,
+              side: THREE.DoubleSide
+            })
+          );
+
+          mesh.position.set(i * spacing - totalWidth * 0.5, 0.1, 0.2);
+          mesh.userData = {
+            basePos: mesh.position.clone(),
+            phase: Math.random() * Math.PI * 2
+          };
+
+          loadingLetters.push(mesh);
+          loadingGroup.add(mesh);
+        }
+      }
 
       function buildLetters(font) {
         const circleRadius = 8.9;
@@ -277,6 +320,7 @@
         "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/fonts/helvetiker_bold.typeface.json",
         (font) => {
           buildLetters(font);
+          buildLoadingText(font);
           animate();
         },
         undefined,
@@ -368,6 +412,25 @@
           planetModel.position.y = 0;
           const baseScale = 2.5;
           planetModel.scale.set(baseScale, baseScale, baseScale);
+        }
+
+        if (loadingGroup.visible) {
+          const freq = 2.0;
+          const amp = 0.06;
+          const waveSpacing = 0.7; // phase offset between letters
+          for (let i = 0; i < loadingLetters.length; i++) {
+            const mesh = loadingLetters[i];
+            const phase = t * freq + i * waveSpacing;
+            mesh.position.copy(mesh.userData.basePos);
+            mesh.position.y += Math.sin(phase) * amp;
+
+            // subtle squash/stretch tied to wave
+            const s = 1 + Math.sin(phase) * 0.02;
+            mesh.scale.set(1 - (s-1)*0.4, s, 1);
+
+            // tiny rotational wiggle
+            mesh.rotation.z = Math.sin(phase * 0.9) * 0.02;
+          }
         }
 
         for (const letter of letters) {

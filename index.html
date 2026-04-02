@@ -348,7 +348,7 @@
       let dragStart = { x: 0, y: 0 };
       const sphereBaseRotX =  Math.PI / 6;
       const sphereBaseRotY = 0;
-      let cameraDistance = 13.0;
+      let cameraDistance = 7.65;
       const cameraLookTarget = new THREE.Vector3(0, 0.0, 0);
       const orbitBaseYaw = 0;
       const orbitBasePitch = 0.35;
@@ -412,7 +412,7 @@
       window.addEventListener("wheel", (e) => {
         e.preventDefault();
         cameraDistance += e.deltaY * 0.01;
-        cameraDistance = Math.max(2.5, Math.min(13.0, cameraDistance));
+        cameraDistance = Math.max(2.5, Math.min(7.65, cameraDistance));
       }, { passive: false });
 
       const clock = new THREE.Clock();

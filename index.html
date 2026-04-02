@@ -412,7 +412,7 @@
       window.addEventListener("wheel", (e) => {
         e.preventDefault();
         cameraDistance += e.deltaY * 0.01;
-        cameraDistance = Math.max(12, Math.min(32, cameraDistance));
+        cameraDistance = Math.max(5, Math.min(32, cameraDistance));
       }, { passive: false });
 
       const clock = new THREE.Clock();
@@ -510,10 +510,9 @@
         camera.position.z += (targetCamZ - camera.position.z) * dt * 3.0;
         camera.lookAt(cameraLookTarget);
 
-        // Keep Nullosphere composition visually static while orbiting camera:
-        // compensate the text root against camera yaw/pitch, but preserve per-letter local animation.
+        // Keep scene objects static in world space while the camera orbits.
         textRoot.position.set(0, 0, 0);
-        textRoot.rotation.set(-orbitPitch + orbitBasePitch, -orbitYaw + orbitBaseYaw, 0);
+        textRoot.rotation.set(0, 0, 0);
       }
 
       function animate() {

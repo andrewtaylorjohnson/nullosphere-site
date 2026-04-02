@@ -60,7 +60,7 @@
       const scene = new THREE.Scene();
       scene.background = new THREE.Color(0x000000);
 
-      const camera = new THREE.PerspectiveCamera(130, window.innerWidth / window.innerHeight, 0.1, 100);
+      const camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 100);
       camera.position.set(0, 4.2, 22.5);
 
       const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -161,6 +161,38 @@
 
       const sphereGroup = new THREE.Group();
       scene.add(sphereGroup);
+
+      // Simple fake ambient occlusion / contact shadow under the planet
+      const aoTexture = (() => {
+        const size = 256;
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        const grad = ctx.createRadialGradient(size/2, size/2, 10, size/2, size/2, size/2);
+        grad.addColorStop(0, 'rgba(0,0,0,0.5)');
+        grad.addColorStop(0.45, 'rgba(0,0,0,0.22)');
+        grad.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, size, size);
+        const tex = new THREE.CanvasTexture(canvas);
+        tex.needsUpdate = true;
+        return tex;
+      })();
+
+      const aoPlane = new THREE.Mesh(
+        new THREE.PlaneGeometry(24, 24),
+        new THREE.MeshBasicMaterial({
+          map: aoTexture,
+          transparent: true,
+          opacity: 0.55,
+          depthWrite: false
+        })
+      );
+      aoPlane.rotation.x = -Math.PI / 2;
+      aoPlane.position.set(0, -7.5, 0);
+      scene.add(aoPlane);
+
 
       function lumpySphereGeometry(radius, seedShift = 0) {
         const g = new THREE.SphereGeometry(radius, 64, 42);
@@ -424,7 +456,7 @@
       let dragStart = { x: 0, y: 0 };
       const sphereBaseRotX =  Math.PI / 6;
       const sphereBaseRotY = 0;
-      let cameraDistance = 3.825;
+      let cameraDistance = 5.2;
       const cameraLookTarget = new THREE.Vector3(0, 0.8, 0);
       const orbitBaseYaw = 0;
       const orbitBasePitch = 0.087;
@@ -439,7 +471,7 @@
         orbitPitch = orbitBasePitch;
         orbitYawTarget = orbitBaseYaw;
         orbitPitchTarget = orbitBasePitch;
-        cameraDistance = 3.825;
+        cameraDistance = 5.2;
       });
 
 
@@ -498,7 +530,7 @@
       window.addEventListener("wheel", (e) => {
         e.preventDefault();
         cameraDistance += e.deltaY * 0.01;
-        cameraDistance = Math.max(2.5, Math.min(7.65, cameraDistance));
+        cameraDistance = Math.max(2.5, Math.min(10.4, cameraDistance));
       }, { passive: false });
 
       const clock = new THREE.Clock();
@@ -597,6 +629,8 @@
         textRoot.position.set(0, 0, 0);
         textRoot.rotation.set(0, 0, 0);
         sphereGroup.position.set(0, 0, 0);
+        aoPlane.position.x = sphereGroup.position.x;
+        aoPlane.position.z = sphereGroup.position.z;
       }
 
       function animate() {

@@ -60,8 +60,8 @@
       const scene = new THREE.Scene();
       scene.background = new THREE.Color(0x000000);
 
-      const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
-      camera.position.set(0, 0.85, 22.5);
+      const camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 100);
+      camera.position.set(0, 3.2, 22.5);
 
       const renderer = new THREE.WebGLRenderer({ antialias: true });
       renderer.setSize(window.innerWidth, window.innerHeight);
@@ -130,7 +130,7 @@
           box.getCenter(center);
 
           const maxDim = Math.max(size.x, size.y, size.z) || 1;
-          const targetSize = 14.0; // 2x bigger than previous planet target
+          const targetSize = 56.0; // 2x bigger than previous planet target
           const uniformScale = targetSize / maxDim;
 
           planetModel.position.sub(center);
@@ -158,8 +158,8 @@
             }
           });
 
-          sphereGroup.rotation.x = -Math.PI / 6;
-          sphereGroup.rotation.y = Math.PI / 4;
+          sphereGroup.rotation.x =  Math.PI / 6;
+          sphereGroup.rotation.y = -Math.PI / 4;
           sphereGroup.add(planetModel);
           loadingGroup.visible = false;
           statusBox.textContent = "planet.glb loaded";
@@ -346,12 +346,12 @@
       const pointer = new THREE.Vector2();
       let isDraggingPlanet = false;
       let planetDragStart = { x: 0, y: 0 };
-      const sphereBaseRotX = -Math.PI / 6;
-      const sphereBaseRotY = Math.PI / 4;
+      const sphereBaseRotX =  Math.PI / 6;
+      const sphereBaseRotY = -Math.PI / 4;
       let sphereRotTargetX = sphereBaseRotX;
       let sphereRotTargetY = sphereBaseRotY;
-      let cameraDistance = 22.5;
-      const cameraLookTarget = new THREE.Vector3(0, 1.3, 0);
+      let cameraDistance = 26.0;
+      const cameraLookTarget = new THREE.Vector3(0, 4.0, 0);
 
 
       function setPointerFromEvent(e) {
@@ -390,8 +390,8 @@
         planetDragStart.x = e.clientX;
         planetDragStart.y = e.clientY;
 
-        sphereRotTargetY += dx * 0.008;
-        sphereRotTargetX += dy * 0.008;
+        sphereRotTargetY += dx * 0.004;
+        sphereRotTargetX += dy * 0.004;
 
         const limit = Math.PI / 6; // 30 degrees from base
         sphereRotTargetX = Math.max(sphereBaseRotX - limit, Math.min(sphereBaseRotX + limit, sphereRotTargetX));
@@ -415,13 +415,13 @@
       const clock = new THREE.Clock();
 
       function update(dt, t) {
-        sphereGroup.rotation.x += (sphereRotTargetX - sphereGroup.rotation.x) * dt * 10.0;
-        sphereGroup.rotation.y += (sphereRotTargetY - sphereGroup.rotation.y) * dt * 10.0;
-        sphereGroup.rotation.z += (0 - sphereGroup.rotation.z) * dt * 10.0;
+        sphereGroup.rotation.x += (sphereRotTargetX - sphereGroup.rotation.x) * dt * 4.5;
+        sphereGroup.rotation.y += (sphereRotTargetY - sphereGroup.rotation.y) * dt * 4.5;
+        sphereGroup.rotation.z += (0 - sphereGroup.rotation.z) * dt * 4.5;
 
         if (planetModel) {
           planetModel.position.y = 0;
-          const baseScale = 2.5;
+          const baseScale = 10.0;
           planetModel.scale.set(baseScale, baseScale, baseScale);
         }
 

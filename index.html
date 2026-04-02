@@ -415,21 +415,13 @@
         }
 
         if (loadingGroup.visible) {
-          const freq = 2.0;
-          const amp = 0.06;
-          const waveSpacing = 0.7; // phase offset between letters
           for (let i = 0; i < loadingLetters.length; i++) {
             const mesh = loadingLetters[i];
-            const phase = t * freq + i * waveSpacing;
+            const phase = t * 2.0 + i * 0.6;
             mesh.position.copy(mesh.userData.basePos);
-            mesh.position.y += Math.sin(phase) * amp;
-
-            // subtle squash/stretch tied to wave
-            const s = 1 + Math.sin(phase) * 0.02;
-            mesh.scale.set(1 - (s-1)*0.4, s, 1);
-
-            // tiny rotational wiggle
-            mesh.rotation.z = Math.sin(phase * 0.9) * 0.02;
+            mesh.position.y += Math.sin(phase) * 0.05;
+            mesh.rotation.z = Math.sin(phase * 0.8) * 0.015;
+            mesh.scale.set(0.995, 1.005, 1);
           }
         }
 

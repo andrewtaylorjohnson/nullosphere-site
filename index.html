@@ -412,7 +412,7 @@
       window.addEventListener("wheel", (e) => {
         e.preventDefault();
         cameraDistance += e.deltaY * 0.01;
-        cameraDistance = Math.max(5, Math.min(32, cameraDistance));
+        cameraDistance = Math.max(2.5, Math.min(13.0, cameraDistance));
       }, { passive: false });
 
       const clock = new THREE.Clock();
@@ -497,22 +497,20 @@
           }
         }
 
-        const focusX = mouseX * 0.55;
-        const focusY = 3.2 - mouseY * 0.45;
-
         const cosPitch = Math.cos(orbitPitch);
-        const targetCamX = focusX + Math.sin(orbitYaw) * cosPitch * cameraDistance;
-        const targetCamY = focusY + Math.sin(orbitPitch) * cameraDistance;
-        const targetCamZ = Math.cos(orbitYaw) * cosPitch * cameraDistance;
+        const targetCamX = cameraLookTarget.x + Math.sin(orbitYaw) * cosPitch * cameraDistance;
+        const targetCamY = cameraLookTarget.y + Math.sin(orbitPitch) * cameraDistance;
+        const targetCamZ = cameraLookTarget.z + Math.cos(orbitYaw) * cosPitch * cameraDistance;
 
         camera.position.x += (targetCamX - camera.position.x) * dt * 3.0;
         camera.position.y += (targetCamY - camera.position.y) * dt * 3.0;
         camera.position.z += (targetCamZ - camera.position.z) * dt * 3.0;
         camera.lookAt(cameraLookTarget);
 
-        // Keep scene objects static in world space while the camera orbits.
+        // Keep scene objects fixed in world space while the camera orbits.
         textRoot.position.set(0, 0, 0);
         textRoot.rotation.set(0, 0, 0);
+        sphereGroup.position.set(0, 0, 0);
       }
 
       function animate() {

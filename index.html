@@ -463,7 +463,7 @@
           let groundSquash = 0;
           if (u.isJumping) {
             u.bounceTime += dt * (3.6 + u.bounceOffset * 0.5); // twice as fast
-            const p = Math.min(u.bounceTime / Math.PI, 1);
+            const p = Math.min(u.bounceTime / (Math.PI * 0.5), 1);
             jump = Math.sin(p * Math.PI);
             groundSquash = Math.pow(Math.cos(p * Math.PI * 2) * 0.5 + 0.5, 6);
 

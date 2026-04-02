@@ -514,6 +514,10 @@
         const dt = Math.min(clock.getDelta(), 0.033);
         const t = clock.elapsedTime;
         update(dt, t);
+
+        // keep text facing camera (billboard effect)
+        textRoot.lookAt(camera.position);
+
         renderer.render(scene, camera);
       }
 
